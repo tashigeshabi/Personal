@@ -1,0 +1,19 @@
+server:
+  port: 8100
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver  #MySQL驱动
+    url: jdbc:mysql://rm-cn-po54m1ayh0001c2o.rwlb.rds.aliyuncs.com:3306/personal?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: person
+    password: Yyj20011118@
+#    driver-class-name: com.mysql.cj.jdbc.Driver  #MySQL驱动
+#    url: jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+#    username: root
+#    password: 123456
+mybatis-plus:
+  mapper-locations:
+    - classpath*:cn/ljrexclusive/modules/**/mapper/*.xml
+    - classpath*:mapper/**/*.xml
+  type-aliases-package: cn.ljrexclusive.modules.*.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
