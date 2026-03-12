@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author Junery
  * @since 2026-01-16
  */
-public interface ISysUserRoleService extends IService<SysUserRole> {
+public interface ISysUserRoleService extends IService<SysUserRole> {   // 用户角色关联表
 
 }

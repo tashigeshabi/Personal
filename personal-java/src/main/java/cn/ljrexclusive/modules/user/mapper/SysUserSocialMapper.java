@@ -1,6 +1,6 @@
 package cn.ljrexclusive.modules.user.mapper;
 
-import cn.ljrexclusive.modules.user.entity.SysUserSocial;
+import cn.ljrexclusive.modules.user.entity.SysUserSocial;   // 用户社交登录关联表
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author Junery
  * @since 2026-01-16
  */
-public interface SysUserSocialMapper extends BaseMapper<SysUserSocial> {
+public interface SysUserSocialMapper extends BaseMapper<SysUserSocial> {   // 用户社交登录关联表
 
 }

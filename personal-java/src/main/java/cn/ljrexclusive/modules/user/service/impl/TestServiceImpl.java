@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2026-01-15
  */
 @Service
-public class TestServiceImpl extends ServiceImpl<TestMapper, Test> implements ITestService {
+public class TestServiceImpl extends ServiceImpl<TestMapper, Test> implements ITestService {   // 测试使用对象 | 服务类
 
 }

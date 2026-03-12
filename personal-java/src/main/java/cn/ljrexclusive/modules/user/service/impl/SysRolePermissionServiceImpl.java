@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2026-01-16
  */
 @Service
-public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionMapper, SysRolePermission> implements ISysRolePermissionService {
+public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionMapper, SysRolePermission> implements ISysRolePermissionService {   // 角色权限关联表 | 角色权限关联表 服务类
 
 }

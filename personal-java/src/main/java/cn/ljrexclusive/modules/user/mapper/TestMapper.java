@@ -1,6 +1,6 @@
 package cn.ljrexclusive.modules.user.mapper;
 
-import cn.ljrexclusive.modules.user.entity.Test;
+import cn.ljrexclusive.modules.user.entity.Test;   // 测试使用对象
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2026-01-15
  */
 @Mapper
-public interface TestMapper extends BaseMapper<Test> {
+public interface TestMapper extends BaseMapper<Test> {   // 测试使用对象
 
 }

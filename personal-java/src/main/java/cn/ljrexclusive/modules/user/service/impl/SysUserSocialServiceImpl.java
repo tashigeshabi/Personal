@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2026-01-16
  */
 @Service
-public class SysUserSocialServiceImpl extends ServiceImpl<SysUserSocialMapper, SysUserSocial> implements ISysUserSocialService {
+public class SysUserSocialServiceImpl extends ServiceImpl<SysUserSocialMapper, SysUserSocial> implements ISysUserSocialService {   // 用户社交登录关联表 | 用户社交登录关联表 服务类
 
 }

@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: personal
+  profiles:
+    active: @profile.name@
+
+login:
+  types:
+    account: account
+    sms: sms
+    wechat: wechat
+
+
+filter:
+  chains:
+    login:
+      account:
+        enabled: true
+        filters:
+          - LoginUserLookupFilter
+          - LoginPasswordValidationFilter

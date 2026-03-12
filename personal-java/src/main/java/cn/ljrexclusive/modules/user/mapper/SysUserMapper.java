@@ -1,6 +1,6 @@
 package cn.ljrexclusive.modules.user.mapper;
 
-import cn.ljrexclusive.modules.user.entity.SysUser;
+import cn.ljrexclusive.modules.user.entity.SysUser;   // 用户表
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author Junery
  * @since 2026-01-16
  */
-public interface SysUserMapper extends BaseMapper<SysUser> {
+public interface SysUserMapper extends BaseMapper<SysUser> {   // 用户表
 
 }

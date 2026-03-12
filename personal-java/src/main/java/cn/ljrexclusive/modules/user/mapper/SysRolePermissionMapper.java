@@ -1,6 +1,6 @@
 package cn.ljrexclusive.modules.user.mapper;
 
-import cn.ljrexclusive.modules.user.entity.SysRolePermission;
+import cn.ljrexclusive.modules.user.entity.SysRolePermission;   // 角色权限关联表
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author Junery
  * @since 2026-01-16
  */
-public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
+public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {   // 角色权限关联表
 
 }

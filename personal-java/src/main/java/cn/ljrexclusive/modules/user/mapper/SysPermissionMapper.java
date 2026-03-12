@@ -1,6 +1,6 @@
 package cn.ljrexclusive.modules.user.mapper;
 
-import cn.ljrexclusive.modules.user.entity.SysPermission;
+import cn.ljrexclusive.modules.user.entity.SysPermission;   // 权限表
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author Junery
  * @since 2026-01-16
  */
-public interface SysPermissionMapper extends BaseMapper<SysPermission> {
+public interface SysPermissionMapper extends BaseMapper<SysPermission> {   // 权限表
 
 }
