@@ -16,12 +16,10 @@ public class FilterConfig {
 
 
     @Bean
-    public FilterManager filterManager(List<LoginFilter<?>> filters) {
-        FilterManager manager = new FilterManager();
+    public FilterManager filterManager(List<LoginFilter<?>> filters, LoginFilterChainProperties loginFilterChainProperties) {
+        FilterManager manager = new FilterManager(loginFilterChainProperties);
 
-        // 注册所有过滤器
         filters.forEach(manager::registerFilter);
-
         return manager;
     }
 

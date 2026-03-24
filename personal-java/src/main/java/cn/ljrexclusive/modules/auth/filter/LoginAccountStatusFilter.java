@@ -2,8 +2,8 @@ package cn.ljrexclusive.modules.auth.filter;
 
 import cn.ljrexclusive.modules.auth.domain.dto.LoginFilterContext;
 import cn.ljrexclusive.modules.auth.domain.dto.LoginFilterResult;
+import cn.ljrexclusive.modules.auth.enums.LoginFilterErrorCode;
 import cn.ljrexclusive.modules.auth.domain.req.basic.LoginRequest;
-import cn.ljrexclusive.modules.auth.service.LoginFilter;
 import cn.ljrexclusive.modules.user.entity.SysUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class LoginAccountStatusFilter implements LoginFilter<LoginRequest> {
+public class LoginAccountStatusFilter extends AbstractLoginFilter<LoginRequest> {
+
+    public LoginAccountStatusFilter(LoginFilterMonitorService loginFilterMonitorService) {
+        super(loginFilterMonitorService);
+    }
     
     @Override
     public String getName() {
@@ -28,30 +32,23 @@ public class LoginAccountStatusFilter implements LoginFilter<LoginRequest> {
     }
     
     @Override
-    public LoginFilterResult filter(LoginFilterContext<LoginRequest> context) {
-        long startTime = System.currentTimeMillis();
+    protected LoginFilterResult doFilterInternal(LoginFilterContext<LoginRequest> context) {
         SysUser sysuser = context.getSysUser();
-        
         if (sysuser == null) {
-            return LoginFilterResult.fail("USER_NOT_FOUND", "用户不存在");
+            return LoginFilterResult.fail(LoginFilterErrorCode.USER_NOT_FOUND.getCode(), LoginFilterErrorCode.USER_NOT_FOUND.getMessage());
         }
-        
+
         try {
             if (Boolean.FALSE.equals(sysuser.getStatus())) {
-                return LoginFilterResult.fail("USER_ACCOUNT_DISABLE", "账号已禁用");
+                return LoginFilterResult.fail(LoginFilterErrorCode.USER_ACCOUNT_DISABLE.getCode(), LoginFilterErrorCode.USER_ACCOUNT_DISABLE.getMessage());
             }
             if (Boolean.TRUE.equals(sysuser.getDeleted())) {
-                return LoginFilterResult.fail("USER_ACCOUNT_NOT_EXIST", "账号不存在");
+                return LoginFilterResult.fail(LoginFilterErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), LoginFilterErrorCode.USER_ACCOUNT_NOT_EXIST.getMessage());
             }
-            
-            long duration = System.currentTimeMillis() - startTime;
-            LoginFilterResult result = LoginFilterResult.success();
-            context.recordExecution(this, result, duration);
-            return result;
-            
+            return LoginFilterResult.success();
         } catch (Exception e) {
             log.error("账户状态检查异常", e);
-            return LoginFilterResult.fail("ACCOUNT_STATUS_ERROR", "账户状态检查异常");
+            return LoginFilterResult.fail(LoginFilterErrorCode.ACCOUNT_STATUS_ERROR.getCode(), LoginFilterErrorCode.ACCOUNT_STATUS_ERROR.getMessage());
         }
     }
 }

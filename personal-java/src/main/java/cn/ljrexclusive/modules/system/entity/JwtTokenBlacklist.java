@@ -3,6 +3,8 @@ package cn.ljrexclusive.modules.system.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -26,6 +28,7 @@ import lombok.experimental.Accessors;
 @ApiModel(value="JwtTokenBlacklist对象", description="JWT令牌黑名单表")
 public class JwtTokenBlacklist implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键ID")

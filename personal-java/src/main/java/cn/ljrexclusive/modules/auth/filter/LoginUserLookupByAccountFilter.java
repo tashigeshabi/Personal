@@ -3,13 +3,12 @@ package cn.ljrexclusive.modules.auth.filter;
 
 import cn.ljrexclusive.modules.auth.domain.dto.LoginFilterContext;
 import cn.ljrexclusive.modules.auth.domain.dto.LoginFilterResult;
+import cn.ljrexclusive.modules.auth.enums.LoginFilterErrorCode;
 import cn.ljrexclusive.modules.auth.domain.req.AccountLoginRequest;
 import cn.ljrexclusive.modules.auth.domain.req.basic.LoginRequest;
 import cn.ljrexclusive.modules.auth.enums.LoginType;
-import cn.ljrexclusive.modules.auth.service.LoginFilter;
 import cn.ljrexclusive.modules.user.entity.SysUser;
 import cn.ljrexclusive.modules.user.service.ISysUserService;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -23,10 +22,14 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class LoginUserLookupByAccountFilter implements LoginFilter<LoginRequest> {
-    
-    @Resource
-    private ISysUserService sysUserService;
+public class LoginUserLookupByAccountFilter extends AbstractLoginFilter<LoginRequest> {
+
+    private final ISysUserService sysUserService;
+
+    public LoginUserLookupByAccountFilter(ISysUserService sysUserService, LoginFilterMonitorService loginFilterMonitorService) {
+        super(loginFilterMonitorService);
+        this.sysUserService = sysUserService;
+    }
 
     
     @Override
@@ -40,36 +43,27 @@ public class LoginUserLookupByAccountFilter implements LoginFilter<LoginRequest>
     }
     
     @Override
-    public LoginFilterResult filter(LoginFilterContext<LoginRequest> context) {
-        long startTime = System.currentTimeMillis();
+    protected LoginFilterResult doFilterInternal(LoginFilterContext<LoginRequest> context) {
         LoginRequest request = context.getTarget();
-        
+        if (!(request instanceof AccountLoginRequest)) {
+            return LoginFilterResult.success();
+        }
+        if (!LoginType.PASSWORD.getType().equals(request.getLoginType())) {
+            return LoginFilterResult.success();
+        }
         try {
-            if (!(request instanceof AccountLoginRequest)) {
-                return LoginFilterResult.success();
-            }
-            if (!LoginType.PASSWORD.getType().equals(request.getLoginType())) {
-                return LoginFilterResult.success();
-            }
             Map<String, Object> extraData = new HashMap<>();
             String username = ((AccountLoginRequest) request).getUsername();
             SysUser sysuser = sysUserService.findByUsername(username);
             if (sysuser == null) {
-                return LoginFilterResult.fail("USER_NOT_FOUND", "用户不存在");
+                return LoginFilterResult.fail(LoginFilterErrorCode.USER_NOT_FOUND.getCode(), LoginFilterErrorCode.USER_NOT_FOUND.getMessage());
             }
             extraData.put("userId", sysuser.getId());
-            // 设置用户到上下文
             context.setSysUser(sysuser);
-            
-            long duration = System.currentTimeMillis() - startTime;
-            LoginFilterResult result = LoginFilterResult.success(extraData);
-            context.recordExecution(this, result, duration);
-            
-            return result;
-            
+            return LoginFilterResult.success(extraData);
         } catch (Exception e) {
             log.error("用户查找异常", e);
-            return LoginFilterResult.fail("USER_LOOKUP_ERROR", "用户查找异常");
+            return LoginFilterResult.fail(LoginFilterErrorCode.USER_LOOKUP_ERROR.getCode(), LoginFilterErrorCode.USER_LOOKUP_ERROR.getMessage());
         }
     }
 

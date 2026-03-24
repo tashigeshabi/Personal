@@ -6,16 +6,44 @@ spring:
 
 login:
   types:
+    # 支持的登录类型标识，需与 LoginType 枚举保持一致
     account: account
     sms: sms
     wechat: wechat
+  security:
+    # 连续失败达到阈值后触发临时锁定
+    max-failed-attempts: 5
+    # 临时锁定时长（秒）
+    lock-duration-seconds: 300
 
 
 filter:
   chains:
     login:
+      # 账号密码登录：完整链路（验证码 -> 查用户 -> 验密码 -> 状态检查）
       account:
         enabled: true
         filters:
-          - LoginUserLookupFilter
-          - LoginPasswordValidationFilter
+          - loginCaptchaFilter
+          - userLookupByAccountFilter
+          - loginPasswordValidationFilter
+          - loginAccountStatusFilter
+      # 短信登录：不需要密码校验，复用公共过滤器
+      sms:
+        enabled: true
+        filters:
+          - loginCaptchaFilter
+          - userLookupByAccountFilter
+          - loginAccountStatusFilter
+      # 微信登录：通常由外部凭证完成身份确认，走最小状态校验链
+      wechat:
+        enabled: true
+        filters:
+          - userLookupByAccountFilter
+          - loginAccountStatusFilter
+
+jwt:
+  access-key: MHcCAQEEIN9FJw6ZxWYhJH7XG9kLq3QaYbZRq1vN2p4mXyU5oJqAoGCCqGSM49AwEHoUQDQgAE
+  refresh-key: MHcCAQEEIN9FJw6ZxWYhJH7XG9kLq3QaYbZRq1vN2p4mXyU5oJqAoGCCqGSM49AwEHoUQDQgAErefresh
+  access-ttl: 7200000
+  refresh-ttl: 604800000

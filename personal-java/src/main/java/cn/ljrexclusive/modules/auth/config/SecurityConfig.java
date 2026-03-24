@@ -1,18 +1,27 @@
 package cn.ljrexclusive.modules.auth.config;
 
+import cn.ljrexclusive.common.enums.ResultCode;
+import cn.ljrexclusive.common.result.Result;
+import cn.ljrexclusive.modules.auth.filter.JwtAuthenticationFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,7 +31,12 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    
+
+    @Resource
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Resource
+    private ObjectMapper objectMapper;
+
     /**
      * 密码编码器 Bean
      */
@@ -36,20 +50,40 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
-                .csrf().disable()  // 禁用CSRF（API服务通常不需要）
-                .cors()
-                .and()      // 启用CORS
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // 无状态会话
-                .and()
-                .authorizeHttpRequests(authz -> authz
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> {
+                })
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/login/loginByAccount"
-                        ).permitAll()  // 公开访问的路径
-                        .anyRequest().authenticated()  // 其他请求需要认证
-                );
+                                "/login/loginByAccount",
+                                "/login/test",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-resources/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            Result<Object> result = Result.failed(ResultCode.UNAUTHORIZED.getCode(), "未登录或Token无效");
+                            result.setPath(request.getRequestURI());
+                            response.getWriter().write(objectMapper.writeValueAsString(result));
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            Result<Object> result = Result.failed(ResultCode.FORBIDDEN.getCode(), "无访问权限");
+                            result.setPath(request.getRequestURI());
+                            response.getWriter().write(objectMapper.writeValueAsString(result));
+                        })
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     

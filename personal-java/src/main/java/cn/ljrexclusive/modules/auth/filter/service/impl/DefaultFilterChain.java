@@ -2,6 +2,7 @@ package cn.ljrexclusive.modules.auth.filter.service.impl;
 
 import cn.ljrexclusive.modules.auth.domain.dto.LoginFilterContext;
 import cn.ljrexclusive.modules.auth.domain.dto.LoginFilterResult;
+import cn.ljrexclusive.modules.auth.enums.LoginFilterErrorCode;
 import cn.ljrexclusive.modules.auth.filter.service.FilterChain;
 import cn.ljrexclusive.modules.auth.service.LoginFilter;
 import lombok.extern.slf4j.Slf4j;
@@ -87,8 +88,8 @@ public class DefaultFilterChain<T> implements FilterChain<T> {
         } catch (Exception e) {
             log.error("过滤器 {} 执行异常", currentFilter.getName(), e);
             context.setInterrupted(true);
-            return LoginFilterResult.fail("FILTER_EXCEPTION",
-                    String.format("过滤器 %s 执行异常: %s", 
+            return LoginFilterResult.fail(LoginFilterErrorCode.FILTER_EXCEPTION.getCode(),
+                    String.format("过滤器 %s 执行异常: %s",
                             currentFilter.getName(), e.getMessage()));
         }
     }

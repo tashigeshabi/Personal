@@ -10,6 +10,7 @@ import cn.ljrexclusive.modules.auth.domain.res.UserLoginResponse;
 import cn.ljrexclusive.modules.auth.filter.manager.FilterManager;
 import cn.ljrexclusive.modules.auth.filter.service.FilterChain;
 import cn.ljrexclusive.modules.auth.service.LoginService;
+import cn.ljrexclusive.modules.auth.utils.JwtUtil;
 import cn.ljrexclusive.modules.user.domain.dto.UserInfoDto;
 import cn.ljrexclusive.modules.user.entity.SysUser;
 import jakarta.annotation.Resource;
@@ -25,6 +26,8 @@ public class LoginServiceImpl implements LoginService {
 
     @Resource
     private FilterManager filterManager;
+    @Resource
+    private JwtUtil jwtUtil;
 
 
     @Override
@@ -41,8 +44,7 @@ public class LoginServiceImpl implements LoginService {
                 .attributes(new HashMap<>())
                 .build();
 
-        // 2. 设置过滤连
-        FilterChain<AccountLoginRequest> filterChain = filterManager.createLoginFilterChain();
+        FilterChain<AccountLoginRequest> filterChain = filterManager.createLoginFilterChain(accountLoginRequest.getLoginType());
 
         // 3. 执行过滤链
         LoginFilterResult loginFilterResult = filterChain.doFilter(context);
@@ -51,7 +53,7 @@ public class LoginServiceImpl implements LoginService {
         if (!loginFilterResult.isPassed()) {
             log.warn("登录过滤失败: {} - {}",
                     loginFilterResult.getErrorCode(), loginFilterResult.getErrorMessage());
-            throw new LoginFilterException(loginFilterResult.getErrorMessage());
+            throw new LoginFilterException(loginFilterResult.getErrorCode(), loginFilterResult.getErrorMessage());
         }
 
         // 5. 获取用户信息
@@ -61,8 +63,8 @@ public class LoginServiceImpl implements LoginService {
         }
 
         // 6. TODO生成Token
-        String accessToken = "test";
-        String refreshToken = "test";
+        String accessToken = jwtUtil.generateAccessToken(sysUser,accountLoginRequest);
+        String refreshToken = jwtUtil.generateRefreshToken(sysUser,accountLoginRequest);
 
         // 7. TODO更新用户登录信息
 
